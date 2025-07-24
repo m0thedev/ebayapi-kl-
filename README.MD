@@ -69,10 +69,11 @@ The API will be available at `http://localhost:8000`
 - **`min_price`** *(integer, optional)*: The minimum price in Euros for the listings (e.g., `200` for at least 200 Euros).
 - **`max_price`** *(integer, optional)*: The maximum price in Euros for the listings (e.g., `500` for at most 500 Euros).
 - **`page_count`** *(integer, optional)*: The number of pages to search or return (e.g., `5` for the first 5 pages, default is 1, max: 20 pages).
+- **`shipping`** *(boolean, optional)*: Filter to show only listings that offer shipping (e.g., `true` to show only items with shipping available).
 
 ##### Example Request:
 ```http
-GET /inserate?query=fahrrad&location=10178&radius=5&min_price=200&page_count=5
+GET /inserate?query=fahrrad&location=10178&radius=5&min_price=200&page_count=5&shipping=true
 ```
 
 #### 2. Fetch Listing Details

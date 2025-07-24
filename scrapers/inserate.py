@@ -11,8 +11,14 @@ async def get_inserate_klaz(browser_manager: PlaywrightManager,
                             radius: int = None,
                             min_price: int = None,
                             max_price: int = None,
-                            page_count: int = 1):
+                            page_count: int = 1,
+                            shipping: bool = None):
     base_url = "https://www.kleinanzeigen.de"
+
+    # Build the shipping filter part of the path
+    shipping_path = ""
+    if shipping is True:
+        shipping_path = "/s-versand:ja"
 
     # Build the price filter part of the path
     price_path = ""
@@ -22,8 +28,8 @@ async def get_inserate_klaz(browser_manager: PlaywrightManager,
         max_price_str = str(max_price) if max_price is not None else ""
         price_path = f"/preis:{min_price_str}:{max_price_str}"
 
-    # Build the search path with price and page information
-    search_path = f"{price_path}/s-seite"
+    # Build the search path with shipping, price and page information
+    search_path = f"{shipping_path}{price_path}/s-seite"
     search_path += ":{page}"
 
     # Build query parameters as before
@@ -80,9 +86,14 @@ async def get_ads(page):
                 price_text = price_text.replace("€", "").replace("VB", "").replace(".", "").strip()
                 description = await article.query_selector("p.aditem-main--middle--description")
                 description_text = await description.inner_text() if description else ""
+                
+                # Get image URL
+                image_element = await article.query_selector(".imagebox.srpimagebox img")
+                image_url = await image_element.get_attribute("src") if image_element else None
+                
                 if data_adid and data_href:
                     data_href = f"https://www.kleinanzeigen.de{data_href}"
-                    results.append({"adid": data_adid, "url": data_href, "title": title_text, "price": price_text, "description": description_text})
+                    results.append({"adid": data_adid, "url": data_href, "title": title_text, "price": price_text, "description": description_text, "image": image_url})
         return results
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
